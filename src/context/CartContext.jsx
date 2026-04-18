@@ -48,6 +48,28 @@ function cartReducer(state, action) {
       }; 
     }
  
+    case 'UPDATE_QUANTITY': {
+      const { id, quantity } = action.payload;
+      if (quantity <= 0) {
+        const newItems = state.items.filter((item) => item.id !== id);
+        return {
+          items: newItems,
+          totalItems: newItems.reduce((sum, item) => sum + item.quantity, 0),
+          totalPrice: newItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        };
+      }
+      
+      const newItems = state.items.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      );
+
+      return {
+        items: newItems,
+        totalItems: newItems.reduce((sum, item) => sum + item.quantity, 0),
+        totalPrice: newItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      };
+    }
+
     case 'CLEAR_CART': 
       return initialState;
      default: 
@@ -70,12 +92,16 @@ export function CartProvider({ children }) {
     dispatch({ type: 'REMOVE_ITEM', payload: productId }); 
   };
  
+  const updateQuantity = (productId, quantity) => {
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id: productId, quantity } });
+  };
+
   const clearCart = () => { 
     dispatch({ type: 'CLEAR_CART' }); 
   };
  
   return ( 
-    <CartContext.Provider value={{ ...state, addItem, removeItem, clearCart }}> 
+    <CartContext.Provider value={{ ...state, addItem, removeItem, updateQuantity, clearCart }}> 
       {children} 
     </CartContext.Provider> 
   ); 

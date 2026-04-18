@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { getProducts, getCategories } from '../services/api'; 
 import ProductCard from '../components/ProductCard'; 
 import Loading from '../components/Loading';
+import SearchBar from '../components/SearchBar';
  
 export default function Home() { 
   const [products, setProducts] = useState([]); 
   const [categories, setCategories] = useState([]); 
   const [selectedCategory, setSelectedCategory] = useState('all'); 
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
  
@@ -29,9 +31,11 @@ export default function Home() {
     fetchData(); 
   }, []);
  
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter((p) => p.category === selectedCategory);
+  const filteredProducts = products.filter((p) => {
+    const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
+    const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchSearch;
+  });
  
   if (loading) return <Loading />; 
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
@@ -39,6 +43,8 @@ export default function Home() {
   return ( 
     <div style={{ padding: '2rem' }}> 
       <h2>Katalog Produk</h2>
+      
+      <SearchBar searchTerm={searchQuery} onSearchChange={setSearchQuery} />
  
       {/* Filter Kategori */} 
       <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap'

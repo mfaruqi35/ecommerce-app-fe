@@ -1,7 +1,7 @@
 import { useCart } from '../context/CartContext';
  
 export default function Cart() { 
-  const { items, totalPrice, removeItem, clearCart } = useCart();
+  const { items, totalPrice, removeItem, updateQuantity, clearCart } = useCart();
  
   if (items.length === 0) { 
     return ( 
@@ -25,10 +25,25 @@ export default function Cart() {
           <div style={{ flex: 1 }}> 
             <h4 style={{ margin: '0 0 0.25rem' }}>{item.title}</h4> 
             <p style={{ margin: 0, color: '#666' }}> 
-              ${item.price.toFixed(2)} x {item.quantity} 
+              ${item.price.toFixed(2)} 
             </p> 
           </div> 
-          <p style={{ fontWeight: 'bold' }}> 
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button 
+              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+              style={{ padding: '0.25rem 0.5rem', cursor: 'pointer', border: '1px solid #ccc', background: '#fff', color: '#333', borderRadius: '4px' }}
+            >
+              -
+            </button>
+            <span style={{ fontWeight: 'bold' }}>{item.quantity}</span>
+            <button 
+              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              style={{ padding: '0.25rem 0.5rem', cursor: 'pointer', border: '1px solid #ccc', background: '#fff', color: '#333', borderRadius: '4px' }}
+            >
+              +
+            </button>
+          </div>
+          <p style={{ fontWeight: 'bold', width: '80px', textAlign: 'right' }}> 
             ${(item.price * item.quantity).toFixed(2)} 
           </p> 
           <button onClick={() => removeItem(item.id)} 
